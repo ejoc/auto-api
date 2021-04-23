@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 2021_04_23_040850) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "vehicle_brands", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_vehicle_brands_on_name", unique: true
+  end
+
+  create_table "vehicle_models", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "brand_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["brand_id"], name: "index_vehicle_models_on_brand_id"
+    t.index ["name"], name: "index_vehicle_models_on_name", unique: true
+  end
+
+  create_table "vehicles", force: :cascade do |t|
+    t.bigint "model_id", null: false
+    t.integer "year"
+    t.integer "mileage"
+    t.integer "price"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["model_id"], name: "index_vehicles_on_model_id"
+  end
+
+  add_foreign_key "vehicle_models", "vehicle_brands", column: "brand_id"
+  add_foreign_key "vehicles", "vehicle_models", column: "model_id"
 end
