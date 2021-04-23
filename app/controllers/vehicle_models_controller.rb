@@ -16,26 +16,6 @@ class VehicleModelsController < ApplicationController
   # POST /vehicle_models
   def create
     @vehicle_model = VehicleModel.new(vehicle_model_params.merge({ brand_attributes: { name: params[:brand] }}))
-    # @vehicle_model.brand_attributes = { name: params[:brand] }
-    # if brand.new_record?
-    #   @vehicle_model.transaction do
-    #     brand.save
-    #     @vehicle_model.brand_id = brand.id
-    #     @vehicle_model.save
-    #   end
-    #   if brand.save
-    #     render json: brand, status: :created, location: brand
-    #   else
-    #     render json: brand.errors, status: :unprocessable_entity
-    #   end
-    # else
-    #   @vehicle_model.brand_id = brand.id
-    #   if @vehicle_model.save
-    #     render json: @vehicle_model, status: :created, location: @vehicle_model
-    #   else
-    #     render json: @vehicle_model.errors, status: :unprocessable_entity
-    #   end
-    # end
 
     if @vehicle_model.save
       render json: @vehicle_model, status: :created, location: @vehicle_model
@@ -69,7 +49,4 @@ class VehicleModelsController < ApplicationController
       params.require(:vehicle_model).permit(:name, brand_attributes: [:name])
     end
 
-    # def vehicle_brand_params
-    #   params.require(:vehicle_brand).permit(:brand)
-    # end
 end
