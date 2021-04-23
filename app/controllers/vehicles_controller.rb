@@ -4,7 +4,21 @@ class VehiclesController < ApplicationController
   # GET /vehicles
   def index
     @vehicles = Vehicle.all
-
+    if query_params[:model_name].present?
+      @vehicles = @vehicles.joins(:model).where(model: { name: query_params[:model_name] })
+    end
+    if query_params[:brand_name].present?
+      @vehicles = @vehicles.joins(model: :brand).where(brand: { name: query_params[:brand_name] })
+    end
+    if query_params[:year].present?
+      @vehicles = @vehicles.where("year > ?", query_params[:year].to_i)
+    end
+    if query_params[:mileage].present?
+      @vehicles = @vehicles.where("mileage < ?", query_params[:mileage].to_i)
+    end
+    if query_params[:price].present?
+      @vehicles = @vehicles.where("price < ?", query_params[:price].to_i)
+    end
     render json: @vehicles
   end
 
@@ -49,5 +63,9 @@ class VehiclesController < ApplicationController
     # Only allow a list of trusted parameters through.
     def vehicle_params
       params.require(:vehicle).permit(:year, :mileage, :price)
+    end
+
+    def query_params
+      params.permit(:model_name, :brand_name, :year, :mileage, :price)
     end
 end
