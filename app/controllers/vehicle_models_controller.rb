@@ -15,7 +15,13 @@ class VehicleModelsController < ApplicationController
 
   # POST /vehicle_models
   def create
-    @vehicle_model = VehicleModel.new(vehicle_model_params.merge({ brand_attributes: { name: params[:brand] }}))
+    brand = VehicleBrand.find_by(name: params[:brand])
+    if brand
+      @vehicle_model = VehicleModel.new(vehicle_model_params)
+      @vehicle_model.brand_id = brand.id
+    else
+      @vehicle_model = VehicleModel.new(vehicle_model_params.merge({ brand_attributes: { name: params[:brand] }}))
+    end
 
     if @vehicle_model.save
       render json: @vehicle_model, status: :created, location: @vehicle_model
@@ -46,7 +52,7 @@ class VehicleModelsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def vehicle_model_params
-      params.require(:vehicle_model).permit(:name, brand_attributes: [:name])
+      params.require(:vehicle_model).permit(:name)
     end
 
 end

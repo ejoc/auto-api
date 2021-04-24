@@ -3,12 +3,12 @@ class VehiclesController < ApplicationController
 
   # GET /vehicles
   def index
-    @vehicles = Vehicle.all
+    @vehicles = Vehicle.joins(model: :brand).select(:id, 'vehicle_models.name AS vehicle_model_name', 'vehicle_brands.name AS brand_name', :year, :mileage, :price)
     if query_params[:model_name].present?
-      @vehicles = @vehicles.joins(:model).where(model: { name: query_params[:model_name] })
+      @vehicles = @vehicles.where("vehicle_models.name LIKE ?", "%#{query_params[:model_name]}%")
     end
     if query_params[:brand_name].present?
-      @vehicles = @vehicles.joins(model: :brand).where(brand: { name: query_params[:brand_name] })
+      @vehicles = @vehicles.where("vehicle_brands.name LIKE ?", "%#{query_params[:brand_name]}%")
     end
     if query_params[:year].present?
       @vehicles = @vehicles.where("year > ?", query_params[:year].to_i)
@@ -19,7 +19,12 @@ class VehiclesController < ApplicationController
     if query_params[:price].present?
       @vehicles = @vehicles.where("price < ?", query_params[:price].to_i)
     end
-    render json: @vehicles
+    all_vehicles = @vehicles.map do |i|
+      h = i.attributes
+      h[:model_name] = h.delete 'vehicle_model_name'
+      h
+    end
+    render json: all_vehicles
   end
 
   # GET /vehicles/1
